@@ -9,7 +9,7 @@ contract ERC20Token is IERC20Token, Ownable {
     using SafeMath for uint256;
 
     string private _name;
-    mapping (address => bool) private _votingAdmins;
+    mapping(address => bool) private _votingAdmins;
     uint256 private _tokenPrice = 1 ether;
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
@@ -38,7 +38,10 @@ contract ERC20Token is IERC20Token, Ownable {
         returns (bool)
     {
         require(amount > 0, "Cannot burn zero tokens");
-        require(_balances[owner] >= amount, "Owner doesn't have this amount of tokens");
+        require(
+            _balances[owner] >= amount,
+            "Owner doesn't have this amount of tokens"
+        );
 
         _balances[owner] -= amount;
         _totalSupply -= amount;
@@ -118,8 +121,11 @@ contract ERC20Token is IERC20Token, Ownable {
         _votingAdmins[newAdmin] = true;
     }
 
-    function changeTokenPrice (uint256 newPrice) public {
-        require(_votingAdmins[msg.sender], "Only price voting admin can change price");
+    function changeTokenPrice(uint256 newPrice) public {
+        require(
+            _votingAdmins[msg.sender],
+            "Only price voting admin can change price"
+        );
         _tokenPrice = newPrice;
     }
 
