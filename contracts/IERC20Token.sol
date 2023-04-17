@@ -20,4 +20,14 @@ interface IERC20Token {
         address to,
         uint256 amount
     ) external returns (bool);
+
+    function addPriceVotingAdmin(address newAdmin) external;
+
+    function changeTokenPrice(uint256 newPrice) external;
+
+    function getTokenPrice() external view returns (uint256);
+
+    function mint(uint256 amount, address to) external returns (bool);
+
+    function burn(uint256 amount, address owner) external returns (bool);
 }
