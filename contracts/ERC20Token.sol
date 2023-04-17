@@ -2,18 +2,45 @@
 pragma solidity ^0.8.0;
 
 import "./IERC20Token.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ERC20Token is IERC20Token {
+contract ERC20Token is IERC20Token, Ownable {
+    using SafeMath for uint256;
+
     string private _name;
-    event Transfer(address from, address to, uint256 value);
-    event Approval(address owner, address spender, uint256 value);
-
+    uint256 private _tokenPrice = 1 ether;
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
 
+    event Transfer(address from, address to, uint256 value);
+    event Approval(address owner, address spender, uint256 value);
+
     constructor(string memory name) {
         _name = name;
+    }
+
+    function mint(uint256 amount, address to) public onlyOwner returns (bool) {
+        require(amount >= 0, "Cannot mint zero tokens");
+
+        _balances[to] += amount;
+        emit Transfer(address(this), to, amount);
+
+        return true;
+    }
+
+    function burn(uint256 amount, address owner)
+        public
+        onlyOwner
+        returns (bool)
+    {
+        require(amount > 0, "Cannot burn zero tokens");
+
+        _balances[owner] -= amount;
+        emit Transfer(address(this), owner, amount);
+
+        return true;
     }
 
     function totalSupply() public view returns (uint256) {
@@ -33,6 +60,7 @@ contract ERC20Token is IERC20Token {
 
         _balances[msg.sender] -= amount;
         _balances[to] += amount;
+        emit Transfer(msg.sender, to, amount);
 
         return true;
     }
@@ -54,6 +82,7 @@ contract ERC20Token is IERC20Token {
         require(_balances[msg.sender] >= amount, "Insufficient amount");
 
         _allowances[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
 
         return true;
     }
@@ -72,10 +101,12 @@ contract ERC20Token is IERC20Token {
         _balances[owner] -= amount;
         _balances[to] += amount;
 
+        emit Transfer(owner, to, amount);
+
         return true;
     }
 
-    function decimals() external returns (uint256) {
+    function decimals() external pure returns (uint256) {
         return 18;
     }
 }
