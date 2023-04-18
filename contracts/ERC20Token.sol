@@ -24,6 +24,7 @@ contract ERC20Token is IERC20Token, Ownable {
 
     function mint(uint256 amount, address to) public onlyOwner returns (bool) {
         require(amount >= 0, "Cannot mint zero tokens");
+        require(to != address(0), "Cannot mint to zero address");
 
         _balances[to] += amount;
         _totalSupply += amount;
@@ -38,6 +39,7 @@ contract ERC20Token is IERC20Token, Ownable {
         returns (bool)
     {
         require(amount > 0, "Cannot burn zero tokens");
+        require(owner != address(0), "Cannot burn from zero address");
         require(
             _balances[owner] >= amount,
             "Owner doesn't have this amount of tokens"
