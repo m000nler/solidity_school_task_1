@@ -77,15 +77,17 @@ contract VotingContract is Ownable {
         );
 
         _token.changeTokenPrice(_priceWithTheStrongestVoice);
-        _votingStartedTime = 0;
-        _userWithTheStrongestVoice = address(0);
-        _priceWithTheStrongestVoice = 0;
+
         emit VotingEnded(
             block.timestamp,
             _votingNumber,
             _userWithTheStrongestVoice,
             _priceWithTheStrongestVoice
         );
+
+        _votingStartedTime = 0;
+        _userWithTheStrongestVoice = address(0);
+        _priceWithTheStrongestVoice = 0;
     }
 
     function changeVotingTime(uint256 newVotingTime) public onlyOwner {
