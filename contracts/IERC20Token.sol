@@ -30,4 +30,8 @@ interface IERC20Token {
     function mint(uint256 amount, address to) external returns (bool);
 
     function burn(uint256 amount, address owner) external returns (bool);
+
+    function deposit() external payable;
+
+    function withdraw() external payable;
 }

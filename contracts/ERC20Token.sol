@@ -134,4 +134,17 @@ contract ERC20Token is IERC20Token, Ownable {
     function getTokenPrice() external view returns (uint256) {
         return _tokenPrice;
     }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Cannot deposit zero tokens");
+        uint256 tokenAmount = msg.value.div(_tokenPrice);
+        _balances[msg.sender] += tokenAmount;
+    }
+
+    function withdraw() public payable {
+        uint256 withdrawAmount = balanceOf(msg.sender).mul(_tokenPrice);
+        (bool success, ) = msg.sender.call{value: withdrawAmount}("");
+        require(success);
+        _balances[msg.sender] = 0;
+    }
 }
