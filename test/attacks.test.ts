@@ -20,10 +20,12 @@ describe('Attacks tests', function () {
     it('Reentrancy attack', async function () {
       const { Token, Attacker } = await loadFixture(deployment);
       await Token.deposit({ value: ethers.utils.parseEther('100') });
-      const ethersToWei = await ethers.utils.parseUnits('-100', 'ether');
       await expect(
         Attacker.attack({ value: ethers.utils.parseEther('10') }),
-      ).to.changeEtherBalance(Token, ethersToWei);
+      ).to.be.revertedWithoutReason();
+      expect(await ethers.provider.getBalance(Token.address)).to.be.eq(
+        ethers.utils.parseEther('100'),
+      );
     });
   });
 });

@@ -4,8 +4,9 @@ pragma solidity ^0.8.0;
 import "./IERC20Token.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract ERC20Token is IERC20Token, Ownable {
+contract ERC20Token is IERC20Token, Ownable, ReentrancyGuard {
     using SafeMath for uint256;
 
     string private _name;
@@ -141,10 +142,11 @@ contract ERC20Token is IERC20Token, Ownable {
         _balances[msg.sender] += tokenAmount;
     }
 
-    function withdraw() public payable {
+    function withdraw() public payable nonReentrant {
+        require(_balances[msg.sender] > 0, "Cannot withdraw without deposit");
         uint256 withdrawAmount = balanceOf(msg.sender).mul(_tokenPrice);
+        _balances[msg.sender] = 0;
         (bool success, ) = msg.sender.call{value: withdrawAmount}("");
         require(success);
-        _balances[msg.sender] = 0;
     }
 }
